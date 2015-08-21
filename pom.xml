@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>br.com.devcase.dwf</groupId>
+		<artifactId>dwf-parent</artifactId>
+		<version>2.1.5-SNAPSHOT</version>
+	</parent>
+	<groupId>br.com.devcase</groupId>
+	<artifactId>web-monitor</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>br.com.devcase.dwf</groupId>
+			<artifactId>dwf-crud</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>br.com.devcase.dwf</groupId>
+			<artifactId>dwf-whitelabel-views</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>br.com.devcase.dwf</groupId>
+					<artifactId>dwf-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>default-cli</id>
+							<goals>
+								<goal>generate-crud</goal>
+							</goals>
+							<configuration>
+								<entityPackage>br.com.devcase.webmonitor.persistence.domain</entityPackage>
+								<daoPackage>br.com.devcase.webmonitor.persistence.dao</daoPackage>
+								<controllerPackage>br.com.devcase.webmonitor.controller</controllerPackage>
+								<daoSrcDir>${basedir}/src/main/java</daoSrcDir>
+								<controllerSrcDir>${basedir}/src/main/java</controllerSrcDir>
+								<viewSrcDir>${basedir}/src/main/webapp/WEB-INF/jsp</viewSrcDir>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+	</build>
+</project>
