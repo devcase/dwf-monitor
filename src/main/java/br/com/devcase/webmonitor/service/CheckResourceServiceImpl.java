@@ -63,8 +63,13 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 					monitoredResource.setNextHealthCheck(
 							DateUtils.addMinutes(new Date(), monitoredResource.getHealthCheckPeriodOnError() != null
 									? monitoredResource.getHealthCheckPeriodOnError() : 5));
-					//notification
+					
+					
+					
 					if(previousCheckResult != Boolean.FALSE) {
+						monitoredResource.setLastError(new Date());
+						
+						//notification
 						if(slackService != null) {
 							slackService.postMessage(slackChannel, "Error detected for: " + monitoredResource);
 						} else {
@@ -80,8 +85,12 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 							DateUtils.addMinutes(new Date(), monitoredResource.getHealthCheckPeriod() != null
 									? monitoredResource.getHealthCheckPeriod() : 60));
 					
-					//notification
 					if(previousCheckResult == Boolean.FALSE) {
+						if(monitoredResource.getLastError() != null) {
+							monitoredResource.setLastErrorDuration(System.currentTimeMillis() - monitoredResource.getLastError().getTime());
+						}
+						
+						//notification
 						if(slackService != null) {
 							slackService.postMessage(slackChannel, "Back to normal: " + monitoredResource);
 						} else {

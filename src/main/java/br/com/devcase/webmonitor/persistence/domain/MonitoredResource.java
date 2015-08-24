@@ -8,11 +8,17 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.URL;
 
+import dwf.persistence.annotations.IgnoreActivityLog;
 import dwf.persistence.annotations.UpdatableProperty;
 import dwf.persistence.domain.BaseEntity;
 
 @Entity
 public class MonitoredResource extends BaseEntity<Long>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3283914510397623467L;
+	
 	public static interface HealthCheckUpdate {}
 	
 	private String name;
@@ -24,6 +30,8 @@ public class MonitoredResource extends BaseEntity<Long>{
 	@Email
 	private String notificationAddress;
 	private Date lastHealthCheck;
+	private Date lastError;
+	private Long lastErrorDuration;	
 	private Date nextHealthCheck;
 	private Boolean healthCheckResult;
 
@@ -69,6 +77,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
 	@NotNull(groups=HealthCheckUpdate.class)
+	@IgnoreActivityLog
 	public Date getLastHealthCheck() {
 		return lastHealthCheck;
 	}
@@ -77,6 +86,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
 	@NotNull(groups=HealthCheckUpdate.class)
+	@IgnoreActivityLog
 	public Date getNextHealthCheck() {
 		return nextHealthCheck;
 	}
@@ -90,5 +100,17 @@ public class MonitoredResource extends BaseEntity<Long>{
 	}
 	public void setHealthCheckResult(Boolean heathCheckResult) {
 		this.healthCheckResult = heathCheckResult;
+	}
+	public Date getLastError() {
+		return lastError;
+	}
+	public void setLastError(Date lastError) {
+		this.lastError = lastError;
+	}
+	public Long getLastErrorDuration() {
+		return lastErrorDuration;
+	}
+	public void setLastErrorDuration(Long lastErrorDuration) {
+		this.lastErrorDuration = lastErrorDuration;
 	}
 }

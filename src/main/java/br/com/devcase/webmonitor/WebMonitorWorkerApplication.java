@@ -23,7 +23,6 @@ public class WebMonitorWorkerApplication {
 
 		final ConfigurableApplicationContext ctx = app.run(args);
 		
-		
         // register a shutdown hook with the JVM
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -32,33 +31,7 @@ public class WebMonitorWorkerApplication {
                 ctx.close();
             }
         });
-        Assert.notNull(ctx.getBean(CheckResourceService.class), "checkResourceService não encontrado!!!");
         
-        final Thread awaitSigtermThread = new Thread("Check resources thread") {
-			@Override
-			public void run() {
-	            try {
-	                while(true) { 
-	                	try {
-	                		CheckResourceService service = ctx.getBean(CheckResourceService.class);
-	                        System.out.println("Resource checking starting" );
-	                		service.checkPending();
-	                        System.out.println("Resource checking finished");
-	                	} catch (Exception ex) {
-	                		ex.printStackTrace();
-	                	}
-	                	Thread.sleep( 60000 ); 
-	                }
-                } catch( InterruptedException ex ) {
-                }
-			}
-        };
-        awaitSigtermThread.start();
-        
-		SlackServiceImpl s = ctx.getBean(SlackServiceImpl.class);
-		String slackChannel = ctx.getEnvironment().getProperty("web-monitor.slackchannel");
-		if(slackChannel == null) slackChannel = "#general";
-		s.postMessage(slackChannel, "WebMonitor is up!");
         
         System.out.println(WebMonitorWorkerApplication.class.getName() + " started" );
 	}

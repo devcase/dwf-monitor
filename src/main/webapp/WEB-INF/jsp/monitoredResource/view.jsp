@@ -15,12 +15,14 @@
  		<dwf:outputText property="healthUrl"/>
  		<dwf:outputText property="healthCheckPeriod"/>
  		<dwf:outputText property="healthCheckPeriodOnError"/>
- 		<dwf:outputText property="notificationAddress"/>
+ 		<dwf:outputText property="healthCheckTimeout"/>
  	</dwf:viewPanel>
 	<dwf:viewPanel title="none">
  		<dwf:outputText property="lastHealthCheck"/>
  		<dwf:outputText property="nextHealthCheck"/>
  		<dwf:outputText property="healthCheckResult"/>
+ 		<dwf:outputText property="lastError"/>
+ 		<dwf:outputText property="lastErrorDuration"/>
  	</dwf:viewPanel>
 </body>
 </html>
