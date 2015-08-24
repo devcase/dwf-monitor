@@ -12,7 +12,7 @@
 			<dwf:inputText property="healthUrl" required="true"/>
 			<dwf:inputNumber property="healthCheckPeriod" required="true"/>
 			<dwf:inputNumber property="healthCheckPeriodOnError" required="false"/>
-			<dwf:inputText property="notificationAddress" required="true"/>
+			<dwf:inputNumber property="healthCheckTimeout" required="false"/>
 		</dwf:editForm>
 	</body>
 </html>

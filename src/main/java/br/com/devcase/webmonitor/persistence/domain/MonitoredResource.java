@@ -20,12 +20,12 @@ public class MonitoredResource extends BaseEntity<Long>{
 	private String healthUrl;
 	private Integer healthCheckPeriod;
 	private Integer healthCheckPeriodOnError;
+	private Integer healthCheckTimeout;
 	@Email
 	private String notificationAddress;
 	private Date lastHealthCheck;
 	private Date nextHealthCheck;
 	private Boolean healthCheckResult;
-	
 
 	public String getName() {
 		return name;
@@ -60,6 +60,12 @@ public class MonitoredResource extends BaseEntity<Long>{
 	}
 	public void setNotificationAddress(String notificationAddress) {
 		this.notificationAddress = notificationAddress;
+	}
+	public Integer getHealthCheckTimeout() {
+		return healthCheckTimeout;
+	}
+	public void setHealthCheckTimeout(Integer healthCheckTimeout) {
+		this.healthCheckTimeout = healthCheckTimeout;
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
 	@NotNull(groups=HealthCheckUpdate.class)
