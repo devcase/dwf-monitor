@@ -104,13 +104,15 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 									? monitoredResource.getHealthCheckPeriod() : 60));
 					
 					if(previousCheckResult == Boolean.FALSE) {
+						long errorDuration = 0;
 						if(monitoredResource.getLastError() != null) {
-							monitoredResource.setLastErrorDuration(System.currentTimeMillis() - monitoredResource.getLastError().getTime());
+							errorDuration = System.currentTimeMillis() - monitoredResource.getLastError().getTime();
+							monitoredResource.setLastErrorDuration(errorDuration);
 						}
 						
 						//notification
 						if(slackService != null) {
-							slackService.postMessage(slackChannel, "Back to normal: " + monitoredResource, "icon_emoji", ":metal:");
+							slackService.postMessage(slackChannel, "Back to normal after " + (errorDuration/1000) + " seconds: " + monitoredResource, "icon_emoji", ":metal:");
 						} else {
 							log.debug("No slack service available");
 						}

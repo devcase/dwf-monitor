@@ -20,7 +20,7 @@ public class WebMonitorWorker {
 
 	@Autowired
 	private CheckResourceService checkResourceService;
-	@Autowired
+	@Autowired(required=false)
 	private SlackService slackService;
 	@Value("${web-monitor.slackchannel:#general}")
 	private String slackWakeUpChannel;
@@ -56,7 +56,9 @@ public class WebMonitorWorker {
         checkResourcesThread.setDaemon(false);
         checkResourcesThread.start();
 
-        if(StringUtils.isNotBlank(slackWakeUpChannel))
-        	slackService.postMessage(slackWakeUpChannel, "WebMonitor is up!");
+        if(slackService != null) {
+	        if(StringUtils.isNotBlank(slackWakeUpChannel))
+	        	slackService.postMessage(slackWakeUpChannel, "WebMonitor is up!");
+        }
 	}
 }

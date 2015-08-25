@@ -4,12 +4,14 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import javax.validation.groups.Default;
 
 import org.hibernate.validator.constraints.URL;
 
 import dwf.persistence.annotations.IgnoreActivityLog;
 import dwf.persistence.annotations.UpdatableProperty;
 import dwf.persistence.domain.BaseEntity;
+import dwf.persistence.validation.ValidationGroups;
 
 @Entity
 public class MonitoredResource extends BaseEntity<Long>{
@@ -43,46 +45,55 @@ public class MonitoredResource extends BaseEntity<Long>{
 	private Long lastErrorDuration;
 	private Integer lastHttpCode;
 
+	@Override
+	protected String displayText() {
+		return name;
+	}
+
+	
+	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
+	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
 	public String getHealthUrl() {
 		return healthUrl;
 	}
 	public void setHealthUrl(String healthUrl) {
 		this.healthUrl = healthUrl;
 	}
-	@Override
-	protected String displayText() {
-		return name;
-	}
+	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
 	public Integer getHealthCheckPeriod() {
 		return healthCheckPeriod;
 	}
 	public void setHealthCheckPeriod(Integer healthCheckPeriod) {
 		this.healthCheckPeriod = healthCheckPeriod;
 	}
+	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
 	public Integer getHealthCheckPeriodOnError() {
 		return healthCheckPeriodOnError;
 	}
 	public void setHealthCheckPeriodOnError(Integer healthCheckPeriodOnError) {
 		this.healthCheckPeriodOnError = healthCheckPeriodOnError;
 	}
+	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
 	public Integer getHealthCheckTimeout() {
 		return healthCheckTimeout;
 	}
 	public void setHealthCheckTimeout(Integer healthCheckTimeout) {
 		this.healthCheckTimeout = healthCheckTimeout;
 	}
+	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
 	public Integer getExpectedHttpCode() {
 		return expectedHttpCode;
 	}
 	public void setExpectedHttpCode(Integer expectedHttpCode) {
 		this.expectedHttpCode = expectedHttpCode;
 	}
+	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
 	public String getExpectedText() {
 		return expectedText;
 	}

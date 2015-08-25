@@ -27,7 +27,7 @@ public class MonitoredResourceImporter extends BaseImporter<MonitoredResource> {
 		b.setHealthCheckTimeout(getValueAsInteger(row, i++));
 		b.setExpectedHttpCode(getValueAsInteger(row, i++));
 		b.setExpectedText(getValueAsString(row, i++));
-		return null;
+		return b;
 	}
 
 }

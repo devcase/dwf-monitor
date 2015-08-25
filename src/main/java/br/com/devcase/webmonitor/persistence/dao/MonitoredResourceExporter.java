@@ -23,6 +23,7 @@ public class MonitoredResourceExporter extends BaseExporter<MonitoredResource> {
 		excelBuilder.column("HealthCheckTimeout");
 		excelBuilder.column("ExpectedHttpCode");
 		excelBuilder.column("ExpectedText");
+		excelBuilder.newLine();
 	}
 
 	@Override
@@ -35,6 +36,7 @@ public class MonitoredResourceExporter extends BaseExporter<MonitoredResource> {
 		excelBuilder.column(bean.getHealthCheckTimeout());
 		excelBuilder.column(bean.getExpectedHttpCode());
 		excelBuilder.column(bean.getExpectedText());
+		excelBuilder.newLine();
 	}
 
 }
