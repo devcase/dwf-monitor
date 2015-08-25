@@ -10,6 +10,33 @@
 	<artifactId>web-monitor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>devcase-repo</id>
+			<name>Devcase Repository S3 Bucket</name>
+			<url>http://devcase-repo.s3-website-us-east-1.amazonaws.com/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>devcase-repo-snapshots</id>
+			<name>Devcase Repository S3 Bucket</name>
+			<url>http://devcase-repo.s3-website-us-east-1.amazonaws.com/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>	
 	<dependencies>
 		<dependency>
 			<groupId>br.com.devcase.dwf</groupId>
