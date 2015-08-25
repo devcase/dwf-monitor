@@ -29,7 +29,7 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.0-801.jdbc4</version>
 			<scope>runtime</scope>
-		</dependency>		
+		</dependency>
 	</dependencies>
 	<build>
 		<pluginManagement>
@@ -58,6 +58,20 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>com.heroku.sdk</groupId>
+				<artifactId>heroku-maven-plugin</artifactId>
+				<configuration>
+					<processTypes>
+						<web>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku,disable-worker -jar target/${project.build.finalName}.${project.packaging}</web>
+						<worker>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dspring.profiles.active=heroku,disable-web -jar target/${project.build.finalName}.${project.packaging}</worker>
+					</processTypes>
+					<appName>${heroku.appname}</appName>
+					<includes>
+						<include>${project.build.directory}/${project.build.finalName}.${project.packaging}</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>br.com.devcase.dwf</groupId>
 				<artifactId>dwf-maven-plugin</artifactId>
 				<executions>
@@ -72,86 +86,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-                    <execution>
-                    	<id>default</id>
-                    	<configuration><skip>true</skip>
-                    	</configuration>
-                    </execution>
-                    <execution>
-                    	<id>spring-boot-repackage-worker</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-	  					<configuration>
-			              	<classifier>worker</classifier>
-	        				<mainClass>br.com.devcase.webmonitor.WebMonitorWorkerApplication</mainClass>
-	      				</configuration>                    
-                    </execution>
-                    <execution>
-                    	<id>spring-boot-repackage-backoffice</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-	  					<configuration>
-			              	<classifier>backoffice</classifier>
-	        				<mainClass>br.com.devcase.webmonitor.WebMonitorBackofficeApplication</mainClass>
-	      				</configuration>                    
-                    </execution>
-                </executions>
-			</plugin>		
-		</plugins>		
+			</plugin>
+		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>backoffice</id>
-			<properties>
-				<heroku.appname>web-monitor-backoffice</heroku.appname>
-				<heroku.active.profile>prod</heroku.active.profile>
-				<jar-classifier>backoffice</jar-classifier>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.heroku.sdk</groupId>
-						<artifactId>heroku-maven-plugin</artifactId>
-						<configuration>
-							<processTypes>
-								<web>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=${heroku.active.profile} -jar target/${project.build.finalName}-${jar-classifier}.${project.packaging} </web>
-							</processTypes>
-							<appName>${heroku.appname}</appName>
-							<includes>
-								<include>${project.build.directory}/${project.build.finalName}-${jar-classifier}.${project.packaging}</include>
-							</includes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>worker</id>
-			<properties>
-				<heroku.appname>web-monitor-worker</heroku.appname>
-				<heroku.active.profile>prod</heroku.active.profile>
-				<jar-classifier>worker</jar-classifier>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.heroku.sdk</groupId>
-						<artifactId>heroku-maven-plugin</artifactId>
-						<configuration>
-							<processTypes>
-								<worker>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=${heroku.active.profile} -jar target/${project.build.finalName}-${jar-classifier}.${project.packaging}</worker>
-							</processTypes>
-							<appName>${heroku.appname}</appName>
-							<includes>
-								<include>${project.build.directory}/${project.build.finalName}-${jar-classifier}.${project.packaging}</include>
-							</includes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	<properties>
+		<heroku.appname>dwfmonitor</heroku.appname>
+	</properties>
 </project>

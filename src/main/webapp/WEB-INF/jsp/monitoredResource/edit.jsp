@@ -13,6 +13,8 @@
 			<dwf:inputNumber property="healthCheckPeriod" required="true"/>
 			<dwf:inputNumber property="healthCheckPeriodOnError" required="false"/>
 			<dwf:inputNumber property="healthCheckTimeout" required="false"/>
+			<dwf:inputNumber property="expectedHttpCode" required="false"/>
+			<dwf:inputNumber property="expectedText" required="false"/>
 		</dwf:editForm>
 	</body>
 </html>

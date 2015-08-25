@@ -23,6 +23,7 @@
  		<dwf:outputText property="healthCheckResult"/>
  		<dwf:outputText property="lastError"/>
  		<dwf:outputText property="lastErrorDuration"/>
+ 		<dwf:outputText property="lastHttpCode"/>
  	</dwf:viewPanel>
 </body>
 </html>
