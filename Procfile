@@ -1,2 +1,1 @@
-web: java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku,disable-worker -jar target/*.jar
-worker: java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dspring.profiles.active=heroku,disable-web -jar target/*.jar
+web: java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku -jar target/*.jar
