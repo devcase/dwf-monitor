@@ -112,7 +112,7 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 						
 						//notification
 						if(slackService != null) {
-							slackService.postMessage(slackChannel, "Back to normal after " + (errorDuration/1000) + " seconds: " + monitoredResource, "icon_emoji", ":metal:");
+							slackService.postMessage(slackChannel, "Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource, "icon_emoji", ":metal:");
 						} else {
 							log.debug("No slack service available");
 						}
