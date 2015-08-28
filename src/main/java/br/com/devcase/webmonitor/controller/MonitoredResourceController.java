@@ -5,13 +5,11 @@ import java.util.concurrent.Callable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.WebApplicationContext;
 
 import br.com.devcase.webmonitor.persistence.domain.MonitoredResource;
 import br.com.devcase.webmonitor.service.CheckResourceService;
@@ -20,7 +18,6 @@ import dwf.web.controller.BaseCrudController;
 @Controller
 @RequestMapping("/monitoredResource/")
 @ConditionalOnWebApplication
-@Scope(WebApplicationContext.SCOPE_REQUEST)
 public class MonitoredResourceController extends BaseCrudController<MonitoredResource, Long> {
 	@Autowired
 	private CheckResourceService checkResourceService;

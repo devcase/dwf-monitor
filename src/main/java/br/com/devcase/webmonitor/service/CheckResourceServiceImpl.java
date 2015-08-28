@@ -87,12 +87,29 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 					
 					if(previousCheckResult != Boolean.FALSE) {
 						monitoredResource.setLastError(new Date());
-						
+					}
+					
+					long errorDuration = 0;
+					if(monitoredResource.getLastError() != null) {
+						errorDuration = System.currentTimeMillis() - monitoredResource.getLastError().getTime();
+						monitoredResource.setLastErrorDuration(errorDuration);
+					}
+					
+					//First alert?
+					long downtimeAlertMillis = (monitoredResource.getDowntimeAlert() != null ? monitoredResource.getDowntimeAlert().intValue() : 10) * 1000;
+					long alertPeriodMillis = (monitoredResource.getNewAlertPeriod() != null ? monitoredResource.getNewAlertPeriod().intValue() : 10) * 1000;
+					long lastAlertMillis = monitoredResource.getLastAlertTime() != null ? (System.currentTimeMillis() - monitoredResource.getLastAlertTime().getTime()) : Integer.MAX_VALUE;  
+					boolean alert = (errorDuration > downtimeAlertMillis) && (lastAlertMillis > alertPeriodMillis); 
+					if(alert) {
+						monitoredResource.setLastAlertTime(new Date());
+						String mention = monitoredResource.getAlertMentions();
+						if(mention == null) mention = "@channel";
+						String message= mention + ": Down for " + (errorDuration/(1000*60 )) + " minutes: " + monitoredResource;
 						//notification
 						if(slackService != null) {
-							slackService.postMessage(slackChannel, "Error detected for: " + monitoredResource, "icon_emoji", ":boom:");
+							slackService.postMessage(slackChannel, message, "icon_emoji", ":boom:");
 						} else {
-							log.debug("No slack service available");
+							log.warn(message);
 						}
 					}
 				} else {
@@ -111,10 +128,14 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 						}
 						
 						//notification
+						String mention = monitoredResource.getAlertMentions();
+						if(mention == null) mention = "@channel";
+
+						String message =  mention + ": Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource;
 						if(slackService != null) {
-							slackService.postMessage(slackChannel, "Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource, "icon_emoji", ":metal:");
+							slackService.postMessage(slackChannel, message, "icon_emoji", ":metal:");
 						} else {
-							log.debug("No slack service available");
+							log.info(message);
 						}
 					}
 				}

@@ -26,13 +26,15 @@ public class MonitoredResource extends BaseEntity<Long>{
 	 * Configuration fields
 	 */
 	private String name;
-	@URL
 	private String healthUrl;
 	private Integer healthCheckPeriod;
 	private Integer healthCheckPeriodOnError;
 	private Integer healthCheckTimeout;
 	private Integer expectedHttpCode;
 	private String expectedText;
+	private Integer downtimeAlert;
+	private Integer newAlertPeriod;
+	private String alertMentions; 
 	
 	
 	/**
@@ -44,6 +46,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 	private Date lastError;
 	private Long lastErrorDuration;
 	private Integer lastHttpCode;
+	private Date lastAlertTime;
 
 	@Override
 	protected String displayText() {
@@ -59,6 +62,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 		this.name = name;
 	}
 	@UpdatableProperty(groups={Default.class, ValidationGroups.ImportFromFile.class})
+	@URL
 	public String getHealthUrl() {
 		return healthUrl;
 	}
@@ -101,6 +105,26 @@ public class MonitoredResource extends BaseEntity<Long>{
 		this.expectedText = expectedText;
 	}
 	
+	public Integer getDowntimeAlert() {
+		return downtimeAlert;
+	}
+	public void setDowntimeAlert(Integer downtimeAlert) {
+		this.downtimeAlert = downtimeAlert;
+	}
+	public Integer getNewAlertPeriod() {
+		return newAlertPeriod;
+	}
+	public void setNewAlertPeriod(Integer newAlertPeriod) {
+		this.newAlertPeriod = newAlertPeriod;
+	}
+	public String getAlertMentions() {
+		return alertMentions;
+	}
+	public void setAlertMentions(String alertMentions) {
+		this.alertMentions = alertMentions;
+	}
+
+
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
 	@NotNull(groups=HealthCheckUpdate.class)
 	@IgnoreActivityLog
@@ -148,5 +172,13 @@ public class MonitoredResource extends BaseEntity<Long>{
 	public void setLastHttpCode(Integer lastHttpCode) {
 		this.lastHttpCode = lastHttpCode;
 	}
+	@UpdatableProperty(groups=HealthCheckUpdate.class)
+	public Date getLastAlertTime() {
+		return lastAlertTime;
+	}
+	public void setLastAlertTime(Date lastAlertTime) {
+		this.lastAlertTime = lastAlertTime;
+	}
+	
 	
 }
