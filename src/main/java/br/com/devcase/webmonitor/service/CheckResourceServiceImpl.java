@@ -96,8 +96,8 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 					}
 					
 					//First alert?
-					long downtimeAlertMillis = (monitoredResource.getDowntimeAlert() != null ? monitoredResource.getDowntimeAlert().intValue() : 10) * 1000;
-					long alertPeriodMillis = (monitoredResource.getNewAlertPeriod() != null ? monitoredResource.getNewAlertPeriod().intValue() : 10) * 1000;
+					long downtimeAlertMillis = (monitoredResource.getDowntimeAlert() != null ? monitoredResource.getDowntimeAlert().intValue() : 10) * 60 * 1000;
+					long alertPeriodMillis = (monitoredResource.getNewAlertPeriod() != null ? monitoredResource.getNewAlertPeriod().intValue() : 10) * 60 * 1000;
 					long lastAlertMillis = monitoredResource.getLastAlertTime() != null ? (System.currentTimeMillis() - monitoredResource.getLastAlertTime().getTime()) : Integer.MAX_VALUE;  
 					boolean alert = (errorDuration > downtimeAlertMillis) && (lastAlertMillis > alertPeriodMillis); 
 					if(alert) {
