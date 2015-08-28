@@ -43,7 +43,7 @@ public class WebMonitorWorker {
                         checkResourceService.checkPending();
                         logger.info("Resource checking finished");
                 	} catch (Exception ex) {
-                		logger.warn(ex);
+                		logger.warn("Erro inesperado", ex);
                 	}
                 }
             } catch( InterruptedException ex ) {
