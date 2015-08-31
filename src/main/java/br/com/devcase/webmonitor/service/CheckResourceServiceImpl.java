@@ -1,8 +1,16 @@
 package br.com.devcase.webmonitor.service;
 
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -38,11 +46,39 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 		this.slackChannel = slackChannel;
 	}
 
+	final SSLContext sslctx;
+	public CheckResourceServiceImpl() {
+		super();
+		
+		//Configuring SSL Context to accept self-signed certificates
+		try {
+			this.sslctx =  SSLContext.getInstance("TLS");
+			sslctx.init(new KeyManager[0], new TrustManager[] {new X509TrustManager () {
 
+				@Override
+				public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+				}
+
+				@Override
+				public X509Certificate[] getAcceptedIssuers() { 
+					return null;
+				}
+				
+			}}, new SecureRandom());
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
 	public void checkPending() throws IOException {
 		List<MonitoredResource> pending = monitoredResourceDAO.findByFilter("pending", Boolean.TRUE);
 
-		CloseableHttpClient hc = HttpClientBuilder.create().build();
+		
+		CloseableHttpClient hc = HttpClientBuilder.create().setSSLContext(sslctx).disableAutomaticRetries().build();
 		try {
 			for (MonitoredResource monitoredResource : pending) {
 				log.info("Checking health for: " + monitoredResource);
@@ -97,7 +133,7 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 					
 					//First alert?
 					long downtimeAlertMillis = (monitoredResource.getDowntimeAlert() != null ? monitoredResource.getDowntimeAlert().intValue() : 10) * 60 * 1000;
-					long alertPeriodMillis = (monitoredResource.getNewAlertPeriod() != null ? monitoredResource.getNewAlertPeriod().intValue() : 10) * 60 * 1000;
+					long alertPeriodMillis = (monitoredResource.getNewAlertPeriod() != null ? monitoredResource.getNewAlertPeriod().intValue() : 20) * 60 * 1000;
 					long lastAlertMillis = monitoredResource.getLastAlertTime() != null ? (System.currentTimeMillis() - monitoredResource.getLastAlertTime().getTime()) : Integer.MAX_VALUE;  
 					boolean alert = (errorDuration > downtimeAlertMillis) && (lastAlertMillis > alertPeriodMillis); 
 					if(alert) {
@@ -127,15 +163,17 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 							monitoredResource.setLastErrorDuration(errorDuration);
 						}
 						
-						//notification
-						String mention = monitoredResource.getAlertMentions();
-						if(mention == null) mention = "@channel";
+						if(monitoredResource.getLastAlertTime() != null  && monitoredResource.getLastError()!=null && monitoredResource.getLastAlertTime().after(monitoredResource.getLastError())) {
+							//notification
+							String mention = monitoredResource.getAlertMentions();
+							if(mention == null) mention = "@channel";
 
-						String message =  mention + ": Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource;
-						if(slackService != null) {
-							slackService.postMessage(slackChannel, message, "icon_emoji", ":metal:");
-						} else {
-							log.info(message);
+							String message =  mention + ": Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource;
+							if(slackService != null) {
+								slackService.postMessage(slackChannel, message, "icon_emoji", ":metal:");
+							} else {
+								log.info(message);
+							}
 						}
 					}
 				}
