@@ -32,7 +32,7 @@ public class MonitoredResourceDAOImpl extends BaseDAOImpl<MonitoredResource> imp
 				super.appendConditions(filter, returnType, params, query, alias);
 				if(Boolean.TRUE.equals(filter.getBoolean("pending"))) {
 					query.append(" and (");
-						query.append(" (").append(alias).append(".lastHealthCheck is null) ");
+						query.append(" (").append(alias).append(".nextHealthCheck is null) ");
 						query.append(" or ");
 						query.append(" (").append(alias).append(".nextHealthCheck <= :now) ");
 					query.append(")");
