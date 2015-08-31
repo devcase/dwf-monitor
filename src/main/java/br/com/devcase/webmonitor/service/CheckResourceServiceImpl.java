@@ -143,7 +143,7 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 						String message= mention + ": Down for " + (errorDuration/(1000*60 )) + " minutes: " + monitoredResource;
 						//notification
 						if(slackService != null) {
-							slackService.postMessage(slackChannel, message, "icon_emoji", ":boom:");
+							slackService.postMessage(slackChannel, message, "icon_emoji", ":boom:", "link_names", "1");
 						} else {
 							log.warn(message);
 						}
@@ -170,7 +170,7 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 
 							String message =  mention + ": Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource;
 							if(slackService != null) {
-								slackService.postMessage(slackChannel, message, "icon_emoji", ":metal:");
+								slackService.postMessage(slackChannel, message, "icon_emoji", ":metal:", "link_names", "1");
 							} else {
 								log.info(message);
 							}
