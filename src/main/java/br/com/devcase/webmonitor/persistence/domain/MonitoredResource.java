@@ -159,6 +159,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 		this.lastError = lastError;
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
+	@IgnoreActivityLog
 	public Long getLastErrorDuration() {
 		return lastErrorDuration;
 	}
