@@ -89,8 +89,7 @@
 				<artifactId>heroku-maven-plugin</artifactId>
 				<configuration>
 					<processTypes>
-						<web>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku,disable-worker -jar target/${project.build.finalName}.${project.packaging}</web>
-						<worker>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dspring.profiles.active=heroku,disable-web -jar target/${project.build.finalName}.${project.packaging}</worker>
+						<web>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku -jar target/${project.build.finalName}.${project.packaging}</web>
 					</processTypes>
 					<appName>${heroku.appname}</appName>
 					<includes>
