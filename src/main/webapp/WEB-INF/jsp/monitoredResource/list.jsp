@@ -9,7 +9,7 @@
 </head>
 <body>
 <div dwf-toggle="autoreload" autoreload-href="${appPath}/${entityName}/list?decorator=table">
-<dwf:dataGrid columns="name,healthCheckResult,lastHealthCheck" var="entity">
+<dwf:dataGrid columns="name,healthCheckResult,lastHealthCheck,healthCheckPeriod,healthCheckPeriodOnError" var="entity">
 <tr>
 	<td class="dwf-ellipsis" style="max-width: 300px">
 		<a href="${appPath}/${entityName}/${entity.id}"><dwf:autoFormat value="${entity}"/></a>
@@ -19,6 +19,12 @@
 	</td>
 	<td class="dwf-ellipsis" style="max-width: 300px">
 		<dwf:autoFormat value="${entity.lastHealthCheck}"/>
+	</td>
+	<td class="dwf-ellipsis" style="max-width: 300px">
+		<dwf:autoFormat value="${entity.healthCheckPeriod}"/>
+	</td>
+	<td class="dwf-ellipsis" style="max-width: 300px">
+		<dwf:autoFormat value="${entity.healthCheckPeriodOnError}"/>
 	</td>
 </tr>
 </dwf:dataGrid>
