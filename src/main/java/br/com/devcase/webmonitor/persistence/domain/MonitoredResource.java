@@ -1,7 +1,9 @@
 package br.com.devcase.webmonitor.persistence.domain;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
@@ -11,6 +13,7 @@ import org.hibernate.validator.constraints.URL;
 import dwf.persistence.annotations.IgnoreActivityLog;
 import dwf.persistence.annotations.UpdatableProperty;
 import dwf.persistence.domain.BaseEntity;
+import dwf.persistence.embeddable.DayOfWeekTime;
 import dwf.persistence.validation.ValidationGroups;
 
 @Entity
@@ -35,7 +38,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 	private Integer downtimeAlert;
 	private Integer newAlertPeriod;
 	private String alertMentions; 
-	
+	private List<DayOfWeekTime> scheduledTimes;
 	
 	/**
 	 * HealthCheckUpdate fields
@@ -179,6 +182,15 @@ public class MonitoredResource extends BaseEntity<Long>{
 	}
 	public void setLastAlertTime(Date lastAlertTime) {
 		this.lastAlertTime = lastAlertTime;
+	}
+
+	@ElementCollection
+	@UpdatableProperty(groups={Default.class})
+	public List<DayOfWeekTime> getScheduledTimes() {
+		return scheduledTimes;
+	}
+	public void setScheduledTimes(List<DayOfWeekTime> scheduledTimes) {
+		this.scheduledTimes = scheduledTimes;
 	}
 	
 	

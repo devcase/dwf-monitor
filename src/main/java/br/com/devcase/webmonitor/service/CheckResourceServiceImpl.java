@@ -81,108 +81,121 @@ public class CheckResourceServiceImpl implements CheckResourceService {
 		CloseableHttpClient hc = HttpClientBuilder.create().setSSLContext(sslctx).disableAutomaticRetries().build();
 		try {
 			for (MonitoredResource monitoredResource : pending) {
-				log.info("Checking health for: " + monitoredResource);
-				monitoredResourceDAO.evict(monitoredResource);
-				monitoredResource.setLastHealthCheck(new Date());
-				
-				HttpGet g = new HttpGet(monitoredResource.getHealthUrl());
-				
-				if(monitoredResource.getHealthCheckTimeout() != null) {
-					RequestConfig reqConfig = RequestConfig.copy(g.getConfig()).setConnectTimeout(monitoredResource.getHealthCheckTimeout().intValue()).setSocketTimeout(monitoredResource.getHealthCheckTimeout().intValue()).build();
-					g.setConfig(reqConfig);
-				}
-				CloseableHttpResponse response;
-				try {
-					response = hc.execute(g);
-				} catch (Exception ex) {
-					log.debug("Exception connecting to health check", ex);
-					response = null;
-				}
-				
-				final int expectedStatusCode = monitoredResource.getExpectedHttpCode() != null ? monitoredResource.getExpectedHttpCode().intValue() : HttpStatus.OK.value();
-				final boolean statusCodeCheck = response != null && response.getStatusLine() != null && response.getStatusLine().getStatusCode() == expectedStatusCode;
-				boolean responseContainsCheck = true;
-				if(StringUtils.isNotBlank(monitoredResource.getExpectedText())) {
-					if(response == null) {
-						responseContainsCheck = false;
-					} else {
-						responseContainsCheck = response.toString().contains(monitoredResource.getExpectedText());
-					}
-				}
-				
-				monitoredResource.setLastHttpCode(response != null && response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : null);
-				
-				Boolean previousCheckResult = monitoredResource.getHealthCheckResult();
-				if(!statusCodeCheck || !responseContainsCheck) {
-					//ERROR
-					log.info("Response got from service: " + response);
-					monitoredResource.setHealthCheckResult(Boolean.FALSE);
-					monitoredResource.setNextHealthCheck(
-							DateUtils.addMinutes(new Date(), monitoredResource.getHealthCheckPeriodOnError() != null
-									? monitoredResource.getHealthCheckPeriodOnError() : 5));
-					
-					if(previousCheckResult != Boolean.FALSE) {
-						monitoredResource.setLastError(new Date());
-					}
-					
-					long errorDuration = 0;
-					if(monitoredResource.getLastError() != null) {
-						errorDuration = System.currentTimeMillis() - monitoredResource.getLastError().getTime();
-						monitoredResource.setLastErrorDuration(errorDuration);
-					}
-					
-					//First alert?
-					long downtimeAlertMillis = (monitoredResource.getDowntimeAlert() != null ? monitoredResource.getDowntimeAlert().intValue() : 10) * 60 * 1000;
-					long alertPeriodMillis = (monitoredResource.getNewAlertPeriod() != null ? monitoredResource.getNewAlertPeriod().intValue() : 20) * 60 * 1000;
-					long lastAlertMillis = monitoredResource.getLastAlertTime() != null ? (System.currentTimeMillis() - monitoredResource.getLastAlertTime().getTime()) : Integer.MAX_VALUE;  
-					boolean alert = (errorDuration > downtimeAlertMillis) && (lastAlertMillis > alertPeriodMillis); 
-					if(alert) {
-						monitoredResource.setLastAlertTime(new Date());
-						String mention = monitoredResource.getAlertMentions();
-						if(mention == null) mention = "@channel";
-						String message= mention + ": Down for " + (errorDuration/(1000*60 )) + " minutes: " + monitoredResource;
-						//notification
-						if(slackService != null) {
-							slackService.postMessage(slackChannel, message, "icon_emoji", ":boom:", "link_names", "1");
-						} else {
-							log.warn(message);
-						}
-					}
-				} else {
-					
-					//OK!
-					monitoredResource.setHealthCheckResult(Boolean.TRUE);
-					monitoredResource.setNextHealthCheck(
-							DateUtils.addMinutes(new Date(), monitoredResource.getHealthCheckPeriod() != null
-									? monitoredResource.getHealthCheckPeriod() : 60));
-					
-					if(previousCheckResult == Boolean.FALSE) {
-						long errorDuration = 0;
-						if(monitoredResource.getLastError() != null) {
-							errorDuration = System.currentTimeMillis() - monitoredResource.getLastError().getTime();
-							monitoredResource.setLastErrorDuration(errorDuration);
-						}
-						
-						if(monitoredResource.getLastAlertTime() != null  && monitoredResource.getLastError()!=null && monitoredResource.getLastAlertTime().after(monitoredResource.getLastError())) {
-							//notification
-							String mention = monitoredResource.getAlertMentions();
-							if(mention == null) mention = "@channel";
-
-							String message =  mention + ": Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource;
-							if(slackService != null) {
-								slackService.postMessage(slackChannel, message, "icon_emoji", ":metal:", "link_names", "1");
-							} else {
-								log.info(message);
-							}
-						}
-					}
-				}
-				
-				monitoredResourceDAO.updateByAnnotation(monitoredResource, MonitoredResource.HealthCheckUpdate.class);
-				response.close();
+				checkResource(hc, monitoredResource);
 			}
 		} finally {
 			hc.close();
 		}
+	}
+	
+	public void checkResource(MonitoredResource monitoredResource) throws IOException {
+		CloseableHttpClient hc = HttpClientBuilder.create().setSSLContext(sslctx).disableAutomaticRetries().build();
+		try {
+			checkResource(hc, monitoredResource);
+		} finally {
+			hc.close();
+		}
+	}
+	
+	protected void checkResource(CloseableHttpClient hc, MonitoredResource monitoredResource) throws IOException {
+		log.info("Checking health for: " + monitoredResource);
+		monitoredResourceDAO.evict(monitoredResource);
+		monitoredResource.setLastHealthCheck(new Date());
+		
+		HttpGet g = new HttpGet(monitoredResource.getHealthUrl());
+		
+		if(monitoredResource.getHealthCheckTimeout() != null) {
+			RequestConfig reqConfig = RequestConfig.copy(g.getConfig()).setConnectTimeout(monitoredResource.getHealthCheckTimeout().intValue()).setSocketTimeout(monitoredResource.getHealthCheckTimeout().intValue()).build();
+			g.setConfig(reqConfig);
+		}
+		CloseableHttpResponse response;
+		try {
+			response = hc.execute(g);
+		} catch (Exception ex) {
+			log.debug("Exception connecting to health check", ex);
+			response = null;
+		}
+		
+		final int expectedStatusCode = monitoredResource.getExpectedHttpCode() != null ? monitoredResource.getExpectedHttpCode().intValue() : HttpStatus.OK.value();
+		final boolean statusCodeCheck = response != null && response.getStatusLine() != null && response.getStatusLine().getStatusCode() == expectedStatusCode;
+		boolean responseContainsCheck = true;
+		if(StringUtils.isNotBlank(monitoredResource.getExpectedText())) {
+			if(response == null) {
+				responseContainsCheck = false;
+			} else {
+				responseContainsCheck = response.toString().contains(monitoredResource.getExpectedText());
+			}
+		}
+		
+		monitoredResource.setLastHttpCode(response != null && response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : null);
+		
+		Boolean previousCheckResult = monitoredResource.getHealthCheckResult();
+		if(!statusCodeCheck || !responseContainsCheck) {
+			//ERROR
+			log.info("Response got from service: " + response);
+			monitoredResource.setHealthCheckResult(Boolean.FALSE);
+			monitoredResource.setNextHealthCheck(
+					DateUtils.addMinutes(new Date(), monitoredResource.getHealthCheckPeriodOnError() != null
+							? monitoredResource.getHealthCheckPeriodOnError() : 5));
+			
+			if(previousCheckResult != Boolean.FALSE) {
+				monitoredResource.setLastError(new Date());
+			}
+			
+			long errorDuration = 0;
+			if(monitoredResource.getLastError() != null) {
+				errorDuration = System.currentTimeMillis() - monitoredResource.getLastError().getTime();
+				monitoredResource.setLastErrorDuration(errorDuration);
+			}
+			
+			//First alert?
+			long downtimeAlertMillis = (monitoredResource.getDowntimeAlert() != null ? monitoredResource.getDowntimeAlert().intValue() : 10) * 60 * 1000;
+			long alertPeriodMillis = (monitoredResource.getNewAlertPeriod() != null ? monitoredResource.getNewAlertPeriod().intValue() : 20) * 60 * 1000;
+			long lastAlertMillis = monitoredResource.getLastAlertTime() != null ? (System.currentTimeMillis() - monitoredResource.getLastAlertTime().getTime()) : Integer.MAX_VALUE;  
+			boolean alert = (errorDuration > downtimeAlertMillis) && (lastAlertMillis > alertPeriodMillis); 
+			if(alert) {
+				monitoredResource.setLastAlertTime(new Date());
+				String mention = monitoredResource.getAlertMentions();
+				if(mention == null) mention = "@channel";
+				String message= mention + ": Down for " + (errorDuration/(1000*60 )) + " minutes: " + monitoredResource;
+				//notification
+				if(slackService != null) {
+					slackService.postMessage(slackChannel, message, "icon_emoji", ":boom:", "link_names", "1");
+				} else {
+					log.warn(message);
+				}
+			}
+		} else {
+			
+			//OK!
+			monitoredResource.setHealthCheckResult(Boolean.TRUE);
+			monitoredResource.setNextHealthCheck(
+					DateUtils.addMinutes(new Date(), monitoredResource.getHealthCheckPeriod() != null
+							? monitoredResource.getHealthCheckPeriod() : 60));
+			
+			if(previousCheckResult == Boolean.FALSE) {
+				long errorDuration = 0;
+				if(monitoredResource.getLastError() != null) {
+					errorDuration = System.currentTimeMillis() - monitoredResource.getLastError().getTime();
+					monitoredResource.setLastErrorDuration(errorDuration);
+				}
+				
+				if(monitoredResource.getLastAlertTime() != null  && monitoredResource.getLastError()!=null && monitoredResource.getLastAlertTime().after(monitoredResource.getLastError())) {
+					//notification
+					String mention = monitoredResource.getAlertMentions();
+					if(mention == null) mention = "@channel";
+
+					String message =  mention + ": Back to normal after " + (errorDuration/(1000*60)) + " minutes: " + monitoredResource;
+					if(slackService != null) {
+						slackService.postMessage(slackChannel, message, "icon_emoji", ":metal:", "link_names", "1");
+					} else {
+						log.info(message);
+					}
+				}
+			}
+		}
+		
+		monitoredResourceDAO.updateByAnnotation(monitoredResource, MonitoredResource.HealthCheckUpdate.class);
+		response.close();
 	}
 }

@@ -18,6 +18,7 @@
 			<dwf:inputNumber property="downtimeAlert" required="true"/>
 			<dwf:inputNumber property="newAlertPeriod" required="true"/>
 			<dwf:inputText property="alertMentions" required="false"/>
+			<dwf:inputDayOfWeekTimeSchedule property="scheduledTimes" />
 		</dwf:editForm>
 	</body>
 </html>
