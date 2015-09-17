@@ -89,7 +89,7 @@
 				<artifactId>heroku-maven-plugin</artifactId>
 				<configuration>
 					<processTypes>
-						<web>java $JAVA_OPTS -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku -jar target/${project.build.finalName}.${project.packaging}</web>
+						<web>java $JAVA_OPTS  -Duser.timezone=America/Sao_Paulo -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku -jar target/${project.build.finalName}.${project.packaging}</web>
 					</processTypes>
 					<appName>${heroku.appname}</appName>
 					<includes>
