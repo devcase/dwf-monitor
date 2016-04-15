@@ -148,6 +148,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
 	@NotNull(groups=HealthCheckUpdate.class)
+	@IgnoreActivityLog
 	public Boolean getHealthCheckResult() {
 		return healthCheckResult;
 	}
@@ -155,6 +156,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 		this.healthCheckResult = heathCheckResult;
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
+	@IgnoreActivityLog
 	public Date getLastError() {
 		return lastError;
 	}

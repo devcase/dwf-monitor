@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>br.com.devcase.dwf</groupId>
 		<artifactId>dwf-parent</artifactId>
-		<version>2.1.6-SNAPSHOT</version>
+		<version>2.4.1-RELEASE</version>
 	</parent>
 	<groupId>br.com.devcase</groupId>
 	<artifactId>web-monitor</artifactId>
@@ -36,7 +36,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-	</repositories>	
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>br.com.devcase.dwf</groupId>
@@ -45,6 +45,7 @@
 		<dependency>
 			<groupId>br.com.devcase.dwf</groupId>
 			<artifactId>dwf-whitelabel-views</artifactId>
+			<version>2.4.1-RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -89,7 +90,10 @@
 				<artifactId>heroku-maven-plugin</artifactId>
 				<configuration>
 					<processTypes>
-						<web>java $JAVA_OPTS  -Duser.timezone=America/Sao_Paulo -Duser.country=BR -Duser.language=pt -Dserver.port=$PORT -Dspring.profiles.active=heroku -jar target/${project.build.finalName}.${project.packaging}</web>
+						<web>java $JAVA_OPTS -Duser.timezone=America/Sao_Paulo
+							-Duser.country=BR -Duser.language=pt -Dserver.port=$PORT
+							-Dspring.profiles.active=heroku -jar
+							target/${project.build.finalName}.${project.packaging}</web>
 					</processTypes>
 					<appName>${heroku.appname}</appName>
 					<includes>
