@@ -172,6 +172,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 		this.lastErrorDuration = lastErrorDuration;
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
+	@IgnoreActivityLog
 	public Integer getLastHttpCode() {
 		return lastHttpCode;
 	}
@@ -179,6 +180,7 @@ public class MonitoredResource extends BaseEntity<Long>{
 		this.lastHttpCode = lastHttpCode;
 	}
 	@UpdatableProperty(groups=HealthCheckUpdate.class)
+	@IgnoreActivityLog
 	public Date getLastAlertTime() {
 		return lastAlertTime;
 	}
